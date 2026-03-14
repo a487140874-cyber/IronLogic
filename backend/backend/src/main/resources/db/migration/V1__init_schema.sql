@@ -1,0 +1,17 @@
+-- IronLogic backend initial schema skeleton.
+-- This round only creates the migration entry point for the first backend scaffold.
+-- Concrete DDL should be filled module by module according to:
+-- docs/04-database-design.md
+--
+-- Planned tables:
+-- users
+-- exercises
+-- programs
+-- program_blocks
+-- session_templates
+-- session_exercise_templates
+-- progression_rules
+-- workout_sessions
+-- workout_exercises
+-- workout_sets
+-- program_progress
