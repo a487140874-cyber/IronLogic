@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ironlogic-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ironlogic_db
+    username: iron_admin
+    password: iron_password123
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+
+logging:
+  level:
+    root: INFO
+    com.ironlogic: INFO
