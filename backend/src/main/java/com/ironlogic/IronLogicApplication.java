@@ -13,7 +13,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * infrastructure packages rather than in the root package.
  */
 @SpringBootApplication
-@MapperScan("com.ironlogic.modules.exercise.infrastructure.persistence.mapper")
+@MapperScan(basePackages = {
+        "com.ironlogic.modules.exercise.infrastructure.persistence.mapper",
+        "com.ironlogic.modules.program.infrastructure.persistence.mapper"
+})
 public class IronLogicApplication {
 
     /**
