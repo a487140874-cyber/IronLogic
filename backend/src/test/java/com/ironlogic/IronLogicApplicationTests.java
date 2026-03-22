@@ -5,6 +5,9 @@ import com.ironlogic.modules.program.infrastructure.persistence.mapper.ProgramBl
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.ProgramMapper;
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.SessionExerciseTemplateMapper;
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.SessionTemplateMapper;
+import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutExerciseMapper;
+import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutSessionMapper;
+import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutSetMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +34,15 @@ class IronLogicApplicationTests {
 
     @MockBean
     private SessionExerciseTemplateMapper sessionExerciseTemplateMapper;
+
+    @MockBean
+    private WorkoutSessionMapper workoutSessionMapper;
+
+    @MockBean
+    private WorkoutExerciseMapper workoutExerciseMapper;
+
+    @MockBean
+    private WorkoutSetMapper workoutSetMapper;
 
     @Test
     void contextLoads() {
