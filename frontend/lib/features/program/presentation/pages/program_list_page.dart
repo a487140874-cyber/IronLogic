@@ -69,6 +69,8 @@ class ProgramListPage extends ConsumerWidget {
                     '结束：${AppDateUtils.formatDateLabel(program.endDate)}',
                   ),
                   isThreeLine: true,
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.go(AppRoutes.programDetail(program.id)),
                 ),
               );
             },

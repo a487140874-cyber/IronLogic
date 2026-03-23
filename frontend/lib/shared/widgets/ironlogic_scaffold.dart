@@ -81,6 +81,13 @@ class _IronLogicDrawer extends StatelessWidget {
               context.go(AppRoutes.programs);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: const Text('训练历史'),
+            onTap: () {
+              context.go(AppRoutes.workoutHistory);
+            },
+          ),
         ],
       ),
     );

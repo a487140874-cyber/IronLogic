@@ -5,7 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/api/program_api.dart';
 import '../data/repository/program_repository_impl.dart';
 import '../domain/model/create_program_input.dart';
+import '../domain/model/create_program_block_input.dart';
+import '../domain/model/create_session_exercise_template_input.dart';
+import '../domain/model/create_session_template_input.dart';
 import '../domain/model/program.dart';
+import '../domain/model/program_block.dart';
+import '../domain/model/session_exercise_template.dart';
+import '../domain/model/session_template.dart';
 import '../domain/repository/program_repository.dart';
 
 /// Program 仓储 Provider。
@@ -16,6 +22,37 @@ final programRepositoryProvider = Provider<ProgramRepository>((ref) {
 /// Program 列表 Provider。
 final programListProvider = FutureProvider<List<Program>>((ref) async {
   return ref.watch(programRepositoryProvider).listPrograms();
+});
+
+/// Program 详情 Provider。
+///
+/// Program 详情页使用单独 Provider，是因为详情和列表的刷新时机不同，
+/// 避免列表刷新把详情页状态一起打断。
+final programDetailProvider = FutureProvider.family<Program, int>((ref, programId) async {
+  return ref.watch(programRepositoryProvider).getProgram(programId);
+});
+
+/// Program 下 Block 列表 Provider。
+final programBlocksProvider =
+    FutureProvider.family<List<ProgramBlock>, int>((ref, programId) async {
+  return ref.watch(programRepositoryProvider).listProgramBlocks(programId);
+});
+
+/// Block 下 SessionTemplate 列表 Provider。
+final sessionTemplatesProvider =
+    FutureProvider.family<List<SessionTemplate>, int>((ref, blockId) async {
+  return ref.watch(programRepositoryProvider).listSessionTemplates(blockId);
+});
+
+/// SessionTemplate 下模板动作列表 Provider。
+final sessionTemplateExercisesProvider =
+    FutureProvider.family<List<SessionExerciseTemplate>, int>((
+  ref,
+  templateId,
+) async {
+  return ref
+      .watch(programRepositoryProvider)
+      .listSessionExerciseTemplates(templateId);
 });
 
 /// 创建 Program 的状态控制器。
@@ -39,4 +76,79 @@ class ProgramCreateController extends AutoDisposeAsyncNotifier<void> {
 final programCreateControllerProvider =
     AutoDisposeAsyncNotifierProvider<ProgramCreateController, void>(
   ProgramCreateController.new,
+);
+
+/// 创建 ProgramBlock 的状态控制器。
+class ProgramBlockCreateController extends AutoDisposeFamilyAsyncNotifier<void, int> {
+  @override
+  FutureOr<void> build(int arg) {}
+
+  /// 提交创建 Block 请求。
+  Future<void> submit(CreateProgramBlockInput input) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final int programId = arg;
+      await ref.read(programRepositoryProvider).createProgramBlock(programId, input);
+      ref.invalidate(programBlocksProvider(programId));
+      ref.invalidate(programDetailProvider(programId));
+    });
+  }
+}
+
+/// 创建 Block 控制器 Provider。
+final programBlockCreateControllerProvider =
+    AutoDisposeAsyncNotifierProviderFamily<ProgramBlockCreateController, void, int>(
+  ProgramBlockCreateController.new,
+);
+
+/// 创建 SessionTemplate 的状态控制器。
+class SessionTemplateCreateController
+    extends AutoDisposeFamilyAsyncNotifier<void, int> {
+  @override
+  FutureOr<void> build(int arg) {}
+
+  /// 提交创建 SessionTemplate 请求。
+  Future<void> submit(CreateSessionTemplateInput input) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final int blockId = arg;
+      await ref.read(programRepositoryProvider).createSessionTemplate(blockId, input);
+      ref.invalidate(sessionTemplatesProvider(blockId));
+    });
+  }
+}
+
+/// 创建 SessionTemplate 控制器 Provider。
+final sessionTemplateCreateControllerProvider =
+    AutoDisposeAsyncNotifierProviderFamily<SessionTemplateCreateController, void, int>(
+  SessionTemplateCreateController.new,
+);
+
+/// 创建 SessionExerciseTemplate 的状态控制器。
+class SessionExerciseTemplateCreateController
+    extends AutoDisposeFamilyAsyncNotifier<void, int> {
+  @override
+  FutureOr<void> build(int arg) {}
+
+  /// 提交创建模板动作请求。
+  Future<void> submit(CreateSessionExerciseTemplateInput input) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final int templateId = arg;
+      await ref
+          .read(programRepositoryProvider)
+          .createSessionExerciseTemplate(templateId, input);
+      ref.invalidate(sessionTemplateExercisesProvider(templateId));
+    });
+  }
+}
+
+/// 创建模板动作控制器 Provider。
+final sessionExerciseTemplateCreateControllerProvider =
+    AutoDisposeAsyncNotifierProviderFamily<
+      SessionExerciseTemplateCreateController,
+      void,
+      int
+    >(
+  SessionExerciseTemplateCreateController.new,
 );

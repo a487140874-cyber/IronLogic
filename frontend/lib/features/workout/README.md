@@ -1,6 +1,15 @@
 # Workout Feature
 
-本目录为后续 workout 执行链路预留。
+本目录现在承载 workout 执行链路的 MVP 实现：
 
-- 本轮 MVP 第一轮明确不实现完整 workout 执行界面
-- 后续可在这里补齐 data / domain / application / presentation 的执行流
+- 从模板开始训练
+- 训练详情查看
+- 覆盖保存 sets
+- 完成训练
+- 历史列表查看
+
+后续仍可继续补充：
+
+- 手动添加训练动作
+- 更细粒度的 sets 编辑体验
+- 更完整的训练执行交互
