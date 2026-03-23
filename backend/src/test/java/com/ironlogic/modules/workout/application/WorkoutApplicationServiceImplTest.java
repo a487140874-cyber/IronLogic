@@ -10,6 +10,7 @@ import com.ironlogic.modules.program.domain.repository.ProgramBlockRepository;
 import com.ironlogic.modules.program.domain.repository.ProgramRepository;
 import com.ironlogic.modules.program.domain.repository.SessionExerciseTemplateRepository;
 import com.ironlogic.modules.program.domain.repository.SessionTemplateRepository;
+import com.ironlogic.modules.progression.application.ProgressionApplicationService;
 import com.ironlogic.modules.workout.domain.model.WorkoutSession;
 import com.ironlogic.modules.workout.domain.model.WorkoutSourceType;
 import com.ironlogic.modules.workout.domain.model.WorkoutStatus;
@@ -60,6 +61,9 @@ class WorkoutApplicationServiceImplTest {
     @Mock
     private ProgramRepository programRepository;
 
+    @Mock
+    private ProgressionApplicationService progressionApplicationService;
+
     @InjectMocks
     private WorkoutApplicationServiceImpl workoutApplicationService;
 
@@ -98,5 +102,60 @@ class WorkoutApplicationServiceImplTest {
         verify(workoutSessionRepository).save(captor.capture());
         assertThat(captor.getValue().sourceType()).isEqualTo(WorkoutSourceType.MANUAL);
         assertThat(captor.getValue().status()).isEqualTo(WorkoutStatus.IN_PROGRESS);
+    }
+
+    /** Verifies that completing a template workout advances progression state. */
+    @Test
+    void shouldAdvanceProgressionWhenTemplateWorkoutIsCompleted() {
+        WorkoutSession existing = new WorkoutSession(
+                300L,
+                1L,
+                WorkoutSourceType.TEMPLATE,
+                10L,
+                20L,
+                30L,
+                WorkoutStatus.IN_PROGRESS,
+                LocalDateTime.now().minusHours(1),
+                null,
+                null,
+                LocalDateTime.now().minusHours(1),
+                LocalDateTime.now().minusHours(1)
+        );
+
+        when(workoutSessionRepository.findByIdAndUserId(300L, 1L)).thenReturn(java.util.Optional.of(existing));
+        when(workoutSessionRepository.update(any(WorkoutSession.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(workoutExerciseRepository.findByWorkoutSessionId(300L)).thenReturn(List.of());
+
+        workoutApplicationService.finishWorkout(1L, 300L);
+
+        verify(progressionApplicationService).advanceProgramProgressAfterWorkoutCompletion(1L, 300L, 10L, 20L, 30L);
+    }
+
+    /** Verifies that completing a manual workout does not move planned progression. */
+    @Test
+    void shouldNotAdvanceProgressionWhenManualWorkoutIsCompleted() {
+        WorkoutSession existing = new WorkoutSession(
+                301L,
+                1L,
+                WorkoutSourceType.MANUAL,
+                null,
+                null,
+                null,
+                WorkoutStatus.IN_PROGRESS,
+                LocalDateTime.now().minusHours(1),
+                null,
+                "Free session",
+                LocalDateTime.now().minusHours(1),
+                LocalDateTime.now().minusHours(1)
+        );
+
+        when(workoutSessionRepository.findByIdAndUserId(301L, 1L)).thenReturn(java.util.Optional.of(existing));
+        when(workoutSessionRepository.update(any(WorkoutSession.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(workoutExerciseRepository.findByWorkoutSessionId(301L)).thenReturn(List.of());
+
+        workoutApplicationService.finishWorkout(1L, 301L);
+
+        verify(progressionApplicationService, org.mockito.Mockito.never())
+                .advanceProgramProgressAfterWorkoutCompletion(any(), any(), any(), any(), any());
     }
 }

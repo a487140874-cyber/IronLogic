@@ -11,6 +11,7 @@ import com.ironlogic.modules.program.domain.repository.ProgramBlockRepository;
 import com.ironlogic.modules.program.domain.repository.ProgramRepository;
 import com.ironlogic.modules.program.domain.repository.SessionExerciseTemplateRepository;
 import com.ironlogic.modules.program.domain.repository.SessionTemplateRepository;
+import com.ironlogic.modules.progression.application.ProgressionApplicationService;
 import com.ironlogic.modules.workout.domain.model.WorkoutExercise;
 import com.ironlogic.modules.workout.domain.model.WorkoutSession;
 import com.ironlogic.modules.workout.domain.model.WorkoutSet;
@@ -52,6 +53,7 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
     private final SessionExerciseTemplateRepository sessionExerciseTemplateRepository;
     private final ProgramBlockRepository programBlockRepository;
     private final ProgramRepository programRepository;
+    private final ProgressionApplicationService progressionApplicationService;
 
     public WorkoutApplicationServiceImpl(
             WorkoutSessionRepository workoutSessionRepository,
@@ -61,7 +63,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
             SessionTemplateRepository sessionTemplateRepository,
             SessionExerciseTemplateRepository sessionExerciseTemplateRepository,
             ProgramBlockRepository programBlockRepository,
-            ProgramRepository programRepository
+            ProgramRepository programRepository,
+            ProgressionApplicationService progressionApplicationService
     ) {
         this.workoutSessionRepository = workoutSessionRepository;
         this.workoutExerciseRepository = workoutExerciseRepository;
@@ -71,6 +74,7 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         this.sessionExerciseTemplateRepository = sessionExerciseTemplateRepository;
         this.programBlockRepository = programBlockRepository;
         this.programRepository = programRepository;
+        this.progressionApplicationService = progressionApplicationService;
     }
 
     /** {@inheritDoc} */
@@ -235,8 +239,23 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
                 LocalDateTime.now()
         ));
 
-        // Deliberately no progression call here. This round only persists execution results and
-        // leaves recommendation logic to the dedicated progression module in a later phase.
+        if (completed.sourceType() == WorkoutSourceType.TEMPLATE) {
+            // Workout owns the act of completing one training session.
+            // Progression owns the separate concern of updating the recommendation cursor afterwards.
+            progressionApplicationService.advanceProgramProgressAfterWorkoutCompletion(
+                    userId,
+                    completed.id(),
+                    completed.sourceProgramId(),
+                    completed.sourceBlockId(),
+                    completed.sourceTemplateId()
+            );
+        }
+
+        if (completed.sourceType() == WorkoutSourceType.MANUAL) {
+            // MANUAL workouts are intentionally excluded from progression.
+            // They are free-form records and should not move the planned template sequence.
+        }
+
         return buildWorkoutDetailResponse(completed);
     }
 
