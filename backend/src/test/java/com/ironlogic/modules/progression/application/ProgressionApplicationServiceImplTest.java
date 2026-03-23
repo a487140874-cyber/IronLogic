@@ -30,10 +30,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Focused unit tests for ProgressionApplicationServiceImpl.
+ * {@link ProgressionApplicationServiceImpl} 的聚焦单元测试。
  *
- * <p>These tests cover the core v1 behaviors: default recommendation when no progress exists
- * and sequence advancement after a completed template workout.
+ * <p>这些测试覆盖 progression v1 的关键行为：默认推荐、同 block 内推进、
+ * 以及最后一个模板回到第一个模板。
  */
 @ExtendWith(MockitoExtension.class)
 class ProgressionApplicationServiceImplTest {
@@ -59,7 +59,7 @@ class ProgressionApplicationServiceImplTest {
     @InjectMocks
     private ProgressionApplicationServiceImpl progressionApplicationService;
 
-    /** Verifies that a Program without progress defaults to the first block and first template. */
+    /** 验证没有 ProgramProgress 时，会默认回到第一个 block 的第一个模板。 */
     @Test
     void shouldReturnFirstBlockFirstTemplateWhenProgressDoesNotExist() {
         Program program = program();
@@ -86,7 +86,7 @@ class ProgressionApplicationServiceImplTest {
         assertThat(response.recommendedSessionTemplate().exercises().get(0).exerciseName()).isEqualTo("Bench Press");
     }
 
-    /** Verifies that template completion advances recommendation to the next template in the same block. */
+    /** 验证模板训练完成后，会推进到同一个 block 中的下一个模板。 */
     @Test
     void shouldAdvanceToNextTemplateInsideSameBlock() {
         Program program = program();
@@ -111,6 +111,31 @@ class ProgressionApplicationServiceImplTest {
         assertThat(saved.currentBlockId()).isEqualTo(10L);
         assertThat(saved.nextSessionTemplateId()).isEqualTo(101L);
         assertThat(saved.lastCompletedWorkoutId()).isEqualTo(500L);
+        assertThat(saved.sequenceCursor()).isEqualTo(1);
+    }
+
+    /** 验证当当前模板已经是 block 最后一个时，会回到该 block 第一个模板。 */
+    @Test
+    void shouldLoopBackToFirstTemplateWhenCurrentTemplateIsLastInBlock() {
+        Program program = program();
+        ProgramBlock block = block(10L, 1);
+        SessionTemplate firstTemplate = template(100L, 10L, 1, "Push A");
+        SessionTemplate secondTemplate = template(101L, 10L, 2, "Push B");
+
+        when(programRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(program));
+        when(programBlockRepository.findById(10L)).thenReturn(Optional.of(block));
+        when(sessionTemplateRepository.findById(101L)).thenReturn(Optional.of(secondTemplate));
+        when(sessionTemplateRepository.findByBlockId(10L)).thenReturn(List.of(firstTemplate, secondTemplate));
+        when(programProgressRepository.findByUserIdAndProgramId(1L, 1L)).thenReturn(Optional.empty());
+
+        progressionApplicationService.advanceProgramProgressAfterWorkoutCompletion(1L, 501L, 1L, 10L, 101L);
+
+        ArgumentCaptor<ProgramProgress> captor = ArgumentCaptor.forClass(ProgramProgress.class);
+        verify(programProgressRepository).save(captor.capture());
+
+        ProgramProgress saved = captor.getValue();
+        assertThat(saved.nextSessionTemplateId()).isEqualTo(100L);
+        assertThat(saved.lastCompletedWorkoutId()).isEqualTo(501L);
         assertThat(saved.sequenceCursor()).isEqualTo(1);
     }
 

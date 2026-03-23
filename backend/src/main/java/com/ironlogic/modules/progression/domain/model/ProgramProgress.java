@@ -3,22 +3,20 @@ package com.ironlogic.modules.progression.domain.model;
 import java.time.LocalDateTime;
 
 /**
- * Domain model for ProgramProgress.
+ * ProgramProgress 的领域模型。
  *
- * <p>This model stores the lightweight progression state of one user's one Program.
- * It intentionally does not replace workout history. Workout history remains the source
- * of truth for what actually happened, while ProgramProgress only stores the current
- * recommendation cursor that the progression module needs.
+ * <p>这个对象保存“某个用户在某个 Program 上的轻量推进状态”。它故意不替代 workout 历史；
+ * workout 历史仍然是实际发生过什么的事实来源，而 ProgramProgress 只保存推荐游标。
  *
- * @param id progression row id
- * @param userId owner user id
- * @param programId target program id
- * @param currentBlockId current block where progression is parked
- * @param nextSessionTemplateId next recommended session template id
- * @param lastCompletedWorkoutId latest completed template workout that advanced progression
- * @param sequenceCursor simple count of sequence advances inside the program
- * @param progressSnapshotJson lightweight json snapshot for debugging and future extension
- * @param updatedAt last update time
+ * @param id 推进记录 id
+ * @param userId 所有者用户 id
+ * @param programId 目标 Program id
+ * @param currentBlockId 当前停留的 Block id
+ * @param nextSessionTemplateId 下一个推荐 SessionTemplate id
+ * @param lastCompletedWorkoutId 最近一次推进该状态的已完成训练 id
+ * @param sequenceCursor 简化后的序列推进计数器
+ * @param progressSnapshotJson 预留给调试和扩展的快照 JSON
+ * @param updatedAt 更新时间
  */
 public record ProgramProgress(
         Long id,

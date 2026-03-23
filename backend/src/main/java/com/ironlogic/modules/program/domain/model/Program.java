@@ -4,21 +4,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Domain model for a training Program.
+ * 训练 Program 的领域模型。
  *
- * <p>A Program is the top-level template object owned by one user. It groups multiple
- * ProgramBlocks and represents a defined training plan rather than a workout execution record.
+ * <p>Program 是模板层的顶层对象，归属于某个用户，可以包含多个 ProgramBlock。
+ * 它表示“训练计划定义”，而不是一次实际执行的训练记录。
  *
- * @param id program id
- * @param userId owner user id
- * @param name program name
- * @param goalType simple goal type string for MVP
- * @param status simple status string for MVP
- * @param description optional description
- * @param startDate optional planned start date
- * @param endDate optional planned end date
- * @param createdAt creation time
- * @param updatedAt last update time
+ * @param id Program id
+ * @param userId 所有者用户 id
+ * @param name Program 名称
+ * @param goalType MVP 阶段使用的目标类型
+ * @param status MVP 阶段使用的状态
+ * @param description 可选描述
+ * @param startDate 可选计划开始日期
+ * @param endDate 可选计划结束日期
+ * @param createdAt 创建时间
+ * @param updatedAt 更新时间
  */
 public record Program(
         Long id,

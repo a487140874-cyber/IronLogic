@@ -3,24 +3,23 @@ package com.ironlogic.modules.workout.domain.model;
 import java.time.LocalDateTime;
 
 /**
- * Domain model for an actual WorkoutSession.
+ * 一次实际 WorkoutSession 的领域模型。
  *
- * <p>This is the execution-layer counterpart of plan definitions. It records one concrete
- * training occurrence for a user, optionally linked back to the template hierarchy that
- * created it.
+ * <p>它是模板定义层在执行层的对应物，用于记录用户的一次真实训练，并可选地回溯到
+ * 创建它的 Program / Block / SessionTemplate。
  *
- * @param id workout session id
- * @param userId owner user id
- * @param sourceType whether the workout comes from template or manual creation
- * @param sourceProgramId optional source program id
- * @param sourceBlockId optional source block id
- * @param sourceTemplateId optional source session template id
- * @param status current workout status
- * @param startedAt actual start time
- * @param endedAt actual finish time
- * @param notes optional workout notes
- * @param createdAt creation time
- * @param updatedAt update time
+ * @param id WorkoutSession id
+ * @param userId 所有者用户 id
+ * @param sourceType 训练来源是模板还是手动创建
+ * @param sourceProgramId 可选来源 Program id
+ * @param sourceBlockId 可选来源 Block id
+ * @param sourceTemplateId 可选来源 SessionTemplate id
+ * @param status 当前训练状态
+ * @param startedAt 实际开始时间
+ * @param endedAt 实际结束时间
+ * @param notes 可选训练备注
+ * @param createdAt 创建时间
+ * @param updatedAt 更新时间
  */
 public record WorkoutSession(
         Long id,

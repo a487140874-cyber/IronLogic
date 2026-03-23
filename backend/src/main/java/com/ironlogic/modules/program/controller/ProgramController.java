@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for Program APIs.
+ * Program 模块的 HTTP Controller。
  *
- * <p>The controller only handles transport concerns. Ownership checks and template hierarchy
- * rules stay in the application service.
+ * <p>这一层只处理传输层问题，真正的归属校验和模板层级规则仍然放在 application service。
  */
 @RestController
 @RequestMapping("/api/programs")
@@ -31,25 +30,25 @@ public class ProgramController {
         this.programApplicationService = programApplicationService;
     }
 
-    /** Lists Programs of the current user. */
+    /** 列出当前用户的 Program。 */
     @GetMapping
     public ApiResponse<List<ProgramResponse>> listPrograms() {
         return ApiResponse.success(programApplicationService.listPrograms(currentUserId()));
     }
 
-    /** Loads Program detail. */
+    /** 查询 Program 详情。 */
     @GetMapping("/{id}")
     public ApiResponse<ProgramResponse> getProgram(@PathVariable Long id) {
         return ApiResponse.success(programApplicationService.getProgram(currentUserId(), id));
     }
 
-    /** Creates a Program for the current user. */
+    /** 为当前用户创建 Program。 */
     @PostMapping
     public ApiResponse<ProgramResponse> createProgram(@Valid @RequestBody CreateProgramRequest request) {
         return ApiResponse.success(programApplicationService.createProgram(currentUserId(), request));
     }
 
-    /** Updates one owned Program. */
+    /** 更新一个属于当前用户的 Program。 */
     @PutMapping("/{id}")
     public ApiResponse<ProgramResponse> updateProgram(
             @PathVariable Long id,
@@ -59,7 +58,7 @@ public class ProgramController {
     }
 
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

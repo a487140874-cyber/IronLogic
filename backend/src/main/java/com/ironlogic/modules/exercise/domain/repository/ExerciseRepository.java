@@ -5,55 +5,54 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository boundary for Exercise aggregate access.
+ * Exercise 聚合的仓储边界。
  *
- * <p>The application layer depends on this abstraction instead of directly on MyBatis-Plus.
- * That keeps use-case code independent from infrastructure details and makes unit testing
- * straightforward with simple mocks.
+ * <p>application 层依赖这个抽象，而不是直接依赖 MyBatis-Plus。这样可以让用例代码不和
+ * 基础设施实现强耦合，单测时也能直接使用 mock。
  */
 public interface ExerciseRepository {
 
     /**
-     * Persists a newly created exercise.
+     * 持久化一个新建的 Exercise。
      *
-     * @param exercise domain exercise to persist
-     * @return persisted exercise including generated id
+     * @param exercise 待持久化的领域对象
+     * @return 持久化后的 Exercise，包含生成 id
      */
     Exercise save(Exercise exercise);
 
     /**
-     * Persists changes to an existing exercise.
+     * 持久化一个已有 Exercise 的更新。
      *
-     * @param exercise updated exercise
-     * @return updated exercise
+     * @param exercise 更新后的 Exercise
+     * @return 更新后的 Exercise
      */
     Exercise update(Exercise exercise);
 
     /**
-     * Finds exercise by id without visibility filtering.
+     * 按 id 查询 Exercise，不附带可见性过滤。
      *
-     * @param id exercise id
-     * @return optional exercise
+     * @param id Exercise id
+     * @return 查询结果
      */
     Optional<Exercise> findById(Long id);
 
     /**
-     * Finds an exercise only if it is visible to the current user.
+     * 仅在当前用户可见时查询 Exercise。
      *
-     * @param userId current user id
-     * @param id exercise id
-     * @return optional visible exercise
+     * @param userId 当前用户 id
+     * @param id Exercise id
+     * @return 可见时返回结果
      */
     Optional<Exercise> findVisibleById(Long userId, Long id);
 
     /**
-     * Lists exercises visible to the current user.
+     * 列出当前用户可见的 Exercise。
      *
-     * @param userId current user id
-     * @param name optional name filter
-     * @param category optional category filter
-     * @param equipmentType optional equipment filter
-     * @return visible exercise list
+     * @param userId 当前用户 id
+     * @param name 可选名称过滤
+     * @param category 可选分类过滤
+     * @param equipmentType 可选器械过滤
+     * @return 可见 Exercise 列表
      */
     List<Exercise> findVisible(Long userId, String name, String category, String equipmentType);
 }

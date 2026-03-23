@@ -24,12 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default application service for progression module v1.
+ * progression 模块 v1 的默认应用服务实现。
  *
- * <p>This implementation intentionally keeps the logic small: it only tracks sequence-based
- * recommendation inside the current block. It does not calculate load progression, does not
- * auto-switch blocks, and does not rewrite workout history. Those concerns belong to future
- * rounds after the minimal progression loop is stable.
+ * <p>这一版实现刻意保持最小闭环：只跟踪当前 block 内的序列推荐，不计算负荷推进，
+ * 不自动切 block，也不改写 workout 历史。这些都留给后续轮次处理。
  */
 @Service
 public class ProgressionApplicationServiceImpl implements ProgressionApplicationService {
@@ -57,7 +55,9 @@ public class ProgressionApplicationServiceImpl implements ProgressionApplication
         this.programProgressRepository = programProgressRepository;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 查询某个 Program 当前推荐的 SessionTemplate。
+     */
     @Override
     @Transactional(readOnly = true)
     public CurrentRecommendationResponse getCurrentRecommendation(Long userId, Long programId) {
@@ -76,7 +76,9 @@ public class ProgressionApplicationServiceImpl implements ProgressionApplication
         );
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 查询某个 Program 当前已持久化的推进状态。
+     */
     @Override
     @Transactional(readOnly = true)
     public ProgramProgressResponse getProgramProgress(Long userId, Long programId) {
@@ -86,7 +88,9 @@ public class ProgressionApplicationServiceImpl implements ProgressionApplication
                 .orElse(null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 在模板训练完成后推进 ProgramProgress。
+     */
     @Override
     @Transactional
     public void advanceProgramProgressAfterWorkoutCompletion(
@@ -127,9 +131,9 @@ public class ProgressionApplicationServiceImpl implements ProgressionApplication
     private RecommendationState resolveCurrentRecommendationState(Long userId, Long programId) {
         ProgramProgress programProgress = programProgressRepository.findByUserIdAndProgramId(userId, programId).orElse(null);
         if (programProgress == null) {
-            // When there is no ProgramProgress yet, recommendation must still work.
-            // v1 chooses the first Block and its first SessionTemplate so a new Program can start
-            // without requiring any extra initialization endpoint.
+            // 即使还没有 ProgramProgress，推荐接口也必须能工作。
+            // v1 直接回到第一个 Block 的第一个 SessionTemplate，
+            // 这样新 Program 不需要额外的初始化接口就能开始训练。
             ProgramBlock firstBlock = requireFirstBlock(programId);
             SessionTemplate firstTemplate = requireFirstTemplate(firstBlock.id());
             return new RecommendationState(firstBlock, firstTemplate, 0);
@@ -185,8 +189,8 @@ public class ProgressionApplicationServiceImpl implements ProgressionApplication
                 continue;
             }
 
-            // v1 only loops inside the current block. It intentionally does not switch to the
-            // next block automatically because block transition rules are postponed to a later round.
+            // v1 只在当前 block 内循环。
+            // 故意不自动切到下一个 block，因为 block 切换规则留到后续轮次再做。
             int nextIndex = i + 1 < templates.size() ? i + 1 : 0;
             return templates.get(nextIndex);
         }

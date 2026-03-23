@@ -5,48 +5,48 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository boundary for Program access.
+ * Program 的仓储边界。
  */
 public interface ProgramRepository {
 
     /**
-     * Persists a new program.
+     * 持久化一个新建的 Program。
      *
-     * @param program program to persist
-     * @return persisted program
+     * @param program 待持久化的 Program
+     * @return 持久化后的 Program
      */
     Program save(Program program);
 
     /**
-     * Updates an existing program.
+     * 持久化一个已有 Program 的更新。
      *
-     * @param program updated program
-     * @return updated program
+     * @param program 更新后的 Program
+     * @return 更新后的 Program
      */
     Program update(Program program);
 
     /**
-     * Finds a program by id.
+     * 按 id 查询 Program。
      *
-     * @param id program id
-     * @return optional program
+     * @param id Program id
+     * @return 查询结果
      */
     Optional<Program> findById(Long id);
 
     /**
-     * Finds a program by id and owner.
+     * 按 id 和所有者查询 Program。
      *
-     * @param id program id
-     * @param userId owner id
-     * @return optional owned program
+     * @param id Program id
+     * @param userId 所有者用户 id
+     * @return 查询结果
      */
     Optional<Program> findByIdAndUserId(Long id, Long userId);
 
     /**
-     * Lists programs of one user.
+     * 列出某个用户的 Program。
      *
-     * @param userId owner id
-     * @return owned programs
+     * @param userId 所有者用户 id
+     * @return Program 列表
      */
     List<Program> findByUserId(Long userId);
 }

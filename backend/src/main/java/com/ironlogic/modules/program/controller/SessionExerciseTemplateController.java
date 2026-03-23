@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for SessionExerciseTemplate APIs.
+ * SessionExerciseTemplate 的 HTTP Controller。
  */
 @RestController
 public class SessionExerciseTemplateController {
@@ -26,13 +26,13 @@ public class SessionExerciseTemplateController {
         this.programApplicationService = programApplicationService;
     }
 
-    /** Lists template exercises under one owned SessionTemplate. */
+    /** 列出指定 SessionTemplate 下的 SessionExerciseTemplate。 */
     @GetMapping("/api/session-templates/{templateId}/exercises")
     public ApiResponse<List<SessionExerciseTemplateResponse>> listSessionExerciseTemplates(@PathVariable Long templateId) {
         return ApiResponse.success(programApplicationService.listSessionExerciseTemplates(currentUserId(), templateId));
     }
 
-    /** Creates a template exercise under one owned SessionTemplate. */
+    /** 在指定 SessionTemplate 下创建 SessionExerciseTemplate。 */
     @PostMapping("/api/session-templates/{templateId}/exercises")
     public ApiResponse<SessionExerciseTemplateResponse> createSessionExerciseTemplate(
             @PathVariable Long templateId,
@@ -43,7 +43,7 @@ public class SessionExerciseTemplateController {
         );
     }
 
-    /** Updates one owned SessionExerciseTemplate. */
+    /** 更新一个属于当前用户 Program 层级的 SessionExerciseTemplate。 */
     @PutMapping("/api/session-template-exercises/{id}")
     public ApiResponse<SessionExerciseTemplateResponse> updateSessionExerciseTemplate(
             @PathVariable Long id,
@@ -55,7 +55,7 @@ public class SessionExerciseTemplateController {
     }
 
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

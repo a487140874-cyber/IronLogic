@@ -29,11 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default application service for Program module.
+ * Program 模块应用服务的默认实现。
  *
- * <p>This class orchestrates the full template hierarchy. It validates ownership by walking
- * the parent chain, enforces sequence/order uniqueness within the correct scope, and checks
- * that referenced exercises already exist before template exercises are created.
+ * <p>这个类负责整个模板层级的编排：沿着父子链路校验归属关系，在正确作用域内校验
+ * sequence/order 唯一性，并在创建模板动作前确认引用的 Exercise 已存在且当前用户可见。
  */
 @Service
 public class ProgramApplicationServiceImpl implements ProgramApplicationService {
@@ -58,7 +57,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         this.exerciseRepository = exerciseRepository;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 为当前用户创建 Program。
+     */
     @Override
     @Transactional
     public ProgramResponse createProgram(Long userId, CreateProgramRequest request) {
@@ -78,7 +79,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toProgramResponse(programRepository.save(program));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 列出当前用户的 Program。
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ProgramResponse> listPrograms(Long userId) {
@@ -87,14 +90,18 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
                 .toList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 查询一个属于当前用户的 Program。
+     */
     @Override
     @Transactional(readOnly = true)
     public ProgramResponse getProgram(Long userId, Long programId) {
         return toProgramResponse(requireOwnedProgram(userId, programId));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 更新一个属于当前用户的 Program。
+     */
     @Override
     @Transactional
     public ProgramResponse updateProgram(Long userId, Long programId, UpdateProgramRequest request) {
@@ -114,13 +121,15 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toProgramResponse(programRepository.update(updated));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 在指定 Program 下创建 ProgramBlock。
+     */
     @Override
     @Transactional
     public ProgramBlockResponse createProgramBlock(Long userId, Long programId, CreateProgramBlockRequest request) {
         requireOwnedProgram(userId, programId);
 
-        // sequenceNo is unique only inside one Program, so the validation must stay scoped to programId.
+        // sequenceNo 只要求在同一个 Program 内唯一，因此校验必须限定在 programId 范围内。
         if (programBlockRepository.existsByProgramIdAndSequenceNo(programId, request.sequenceNo())) {
             throw new BusinessException("Block sequenceNo already exists in this program");
         }
@@ -142,7 +151,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toProgramBlockResponse(programBlockRepository.save(block));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 列出指定 Program 下的 ProgramBlock。
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ProgramBlockResponse> listProgramBlocks(Long userId, Long programId) {
@@ -152,7 +163,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
                 .toList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 更新一个属于当前用户 Program 层级的 ProgramBlock。
+     */
     @Override
     @Transactional
     public ProgramBlockResponse updateProgramBlock(Long userId, Long blockId, UpdateProgramBlockRequest request) {
@@ -182,13 +195,15 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toProgramBlockResponse(programBlockRepository.update(updated));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 在指定 ProgramBlock 下创建 SessionTemplate。
+     */
     @Override
     @Transactional
     public SessionTemplateResponse createSessionTemplate(Long userId, Long blockId, CreateSessionTemplateRequest request) {
         requireOwnedBlock(userId, blockId);
 
-        // sequenceNo is unique inside one Block because template order is defined locally per block.
+        // sequenceNo 只要求在同一个 Block 内唯一，因为模板顺序是按 block 局部定义的。
         if (sessionTemplateRepository.existsByBlockIdAndSequenceNo(blockId, request.sequenceNo())) {
             throw new BusinessException("SessionTemplate sequenceNo already exists in this block");
         }
@@ -208,7 +223,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toSessionTemplateResponse(sessionTemplateRepository.save(template));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 列出指定 ProgramBlock 下的 SessionTemplate。
+     */
     @Override
     @Transactional(readOnly = true)
     public List<SessionTemplateResponse> listSessionTemplates(Long userId, Long blockId) {
@@ -218,7 +235,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
                 .toList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 更新一个属于当前用户 Program 层级的 SessionTemplate。
+     */
     @Override
     @Transactional
     public SessionTemplateResponse updateSessionTemplate(Long userId, Long templateId, UpdateSessionTemplateRequest request) {
@@ -246,7 +265,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toSessionTemplateResponse(sessionTemplateRepository.update(updated));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 在指定 SessionTemplate 下创建 SessionExerciseTemplate。
+     */
     @Override
     @Transactional
     public SessionExerciseTemplateResponse createSessionExerciseTemplate(
@@ -263,7 +284,7 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
             throw new BusinessException("SessionExerciseTemplate orderNo already exists in this session template");
         }
 
-        // Template definition may only reference an exercise the current user can actually see.
+        // 模板定义只能引用当前用户真正可见的 Exercise，避免保存不可访问的动作引用。
         requireVisibleExercise(userId, request.exerciseId());
 
         LocalDateTime now = LocalDateTime.now();
@@ -286,7 +307,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
         return toSessionExerciseTemplateResponse(sessionExerciseTemplateRepository.save(templateExercise));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 列出指定 SessionTemplate 下的 SessionExerciseTemplate。
+     */
     @Override
     @Transactional(readOnly = true)
     public List<SessionExerciseTemplateResponse> listSessionExerciseTemplates(Long userId, Long sessionTemplateId) {
@@ -296,7 +319,9 @@ public class ProgramApplicationServiceImpl implements ProgramApplicationService 
                 .toList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 更新一个属于当前用户 Program 层级的 SessionExerciseTemplate。
+     */
     @Override
     @Transactional
     public SessionExerciseTemplateResponse updateSessionExerciseTemplate(

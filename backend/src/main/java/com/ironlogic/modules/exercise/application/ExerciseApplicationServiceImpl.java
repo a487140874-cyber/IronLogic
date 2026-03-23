@@ -15,12 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default implementation of Exercise application use cases.
+ * Exercise 模块应用服务的默认实现。
  *
- * <p>This class is placed in the application layer because its main job is orchestration:
- * it receives DTOs from the controller, enforces module-level rules such as ownership and
- * system/custom boundaries, and then delegates data access to the repository abstraction.
- * The logic stays here instead of controller so the HTTP layer remains thin and reusable.
+ * <p>这个类放在 application 层，是因为它的主要职责是编排：接收 Controller 传入的 DTO，
+ * 执行归属权、系统/自定义边界等模块级规则，再委托 Repository 访问数据。这样可以让
+ * HTTP 层保持轻量，也便于后续直接在 application 层做单元测试。
  */
 @Service
 public class ExerciseApplicationServiceImpl implements ExerciseApplicationService {
@@ -32,18 +31,18 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Creates a custom exercise owned by the current user.
+     * 为当前用户创建一个自定义 Exercise。
      *
-     * @param userId id of the current user
-     * @param request incoming create payload
-     * @return created exercise response
+     * @param userId 当前用户 id
+     * @param request 创建请求
+     * @return 创建后的 Exercise 响应
      */
     @Override
     @Transactional
     public ExerciseResponse createCustomExercise(Long userId, CreateExerciseRequest request) {
         LocalDateTime now = LocalDateTime.now();
-        // A user-created exercise must always be tied to the current user and marked custom.
-        // These two fields are derived from business rules, not trusted from client input.
+        // 用户创建的 Exercise 必须绑定到当前用户，并显式标记为自定义。
+        // 这两个字段由业务规则决定，不能信任客户端直接传入。
         Exercise exercise = new Exercise(
                 null,
                 userId,
@@ -62,14 +61,14 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Updates an existing custom exercise.
+     * 更新一个已有的自定义 Exercise。
      *
-     * @param userId id of the current user
-     * @param exerciseId target exercise id
-     * @param request incoming update payload
-     * @return updated exercise response
-     * @throws NotFoundException when target exercise does not exist
-     * @throws ForbiddenException when the exercise is system-owned or belongs to another user
+     * @param userId 当前用户 id
+     * @param exerciseId 目标 Exercise id
+     * @param request 更新请求
+     * @return 更新后的 Exercise 响应
+     * @throws NotFoundException 目标不存在时抛出
+     * @throws ForbiddenException 目标属于系统 Exercise 或不属于当前用户时抛出
      */
     @Override
     @Transactional
@@ -77,9 +76,9 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
         Exercise existing = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> new NotFoundException("Exercise not found"));
 
-        // System exercises are shared reference data. Allowing update here would let one user
-        // mutate global catalog data, so they are explicitly read-only in MVP.
-        // For custom exercises, only the owner may modify them.
+        // 系统 Exercise 属于共享参考数据。
+        // 如果允许在这里更新，就会让某个用户修改全局动作目录，因此 MVP 阶段明确只读。
+        // 对于自定义 Exercise，则只允许所有者修改。
         if (!ExerciseOwnershipPolicy.canModify(existing, userId)) {
             if (existing.ownerUserId() == null || !Boolean.TRUE.equals(existing.isCustom())) {
                 throw new ForbiddenException("System exercise cannot be modified");
@@ -105,12 +104,12 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Returns a single exercise if it is visible to the current user.
+     * 返回当前用户可见的单个 Exercise。
      *
-     * @param userId id of the current user
-     * @param exerciseId target exercise id
-     * @return exercise detail
-     * @throws NotFoundException when not found or not visible
+     * @param userId 当前用户 id
+     * @param exerciseId 目标 Exercise id
+     * @return Exercise 详情
+     * @throws NotFoundException 目标不存在或不可见时抛出
      */
     @Override
     @Transactional(readOnly = true)
@@ -121,11 +120,11 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Lists visible exercises for the current user.
+     * 列出当前用户可见的 Exercise。
      *
-     * @param userId id of the current user
-     * @param request optional query filters
-     * @return visible exercise list including system exercises and user's custom exercises
+     * @param userId 当前用户 id
+     * @param request 可选过滤条件
+     * @return 可见 Exercise 列表，包含系统 Exercise 和用户自定义 Exercise
      */
     @Override
     @Transactional(readOnly = true)
@@ -141,10 +140,10 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Maps domain object to response DTO.
+     * 将领域对象转换为响应 DTO。
      *
-     * @param exercise domain exercise object
-     * @return response DTO used by controller layer
+     * @param exercise 领域对象
+     * @return Controller 层返回用的 DTO
      */
     private static ExerciseResponse toResponse(Exercise exercise) {
         return new ExerciseResponse(
@@ -164,12 +163,12 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
 
     /**
-     * Trims incoming string values and converts blank strings to {@code null}.
+     * 去除字符串两端空白，并把空串转换为 {@code null}。
      *
-     * <p>This keeps the stored data cleaner and avoids treating blank text as meaningful data.
+     * <p>这样可以让存储数据更干净，避免把空白文本误当成有效业务值。
      *
-     * @param value raw input value
-     * @return normalized value or {@code null}
+     * @param value 原始输入
+     * @return 归一化后的值；如果为空则返回 {@code null}
      */
     private static String normalize(String value) {
         if (value == null) {

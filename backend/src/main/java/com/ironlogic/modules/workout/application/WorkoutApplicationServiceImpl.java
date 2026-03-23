@@ -36,11 +36,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default application service for Workout module.
+ * Workout 模块应用服务的默认实现。
  *
- * <p>This class is the orchestration layer of live training execution. It deliberately keeps
- * template reads, ownership checks, and mutation rules in one place so controllers stay thin
- * and the future progression module can hook into a stable completed-workout boundary later.
+ * <p>这个类是训练执行流程的编排层，把模板读取、归属校验和写入规则集中放在一起，
+ * 让 Controller 保持轻量，也为后续 progression 在“训练完成”这个稳定边界上接入提供位置。
  */
 @Service
 public class WorkoutApplicationServiceImpl implements WorkoutApplicationService {
@@ -77,15 +76,17 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         this.progressionApplicationService = progressionApplicationService;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 基于模板开始一次训练。
+     */
     @Override
     @Transactional
     public WorkoutDetailResponse createWorkoutFromTemplate(Long userId, Long templateId) {
         TemplateContext templateContext = requireAccessibleTemplate(userId, templateId);
         LocalDateTime now = LocalDateTime.now();
 
-        // TEMPLATE is explicit because future progression and history features need to know
-        // whether this workout came from a planned template or from ad-hoc manual training.
+        // 这里必须显式记录 TEMPLATE，因为后续 progression 和历史分析都需要知道
+        // 这次训练是来自计划模板，还是临时手动创建的。
         WorkoutSession session = workoutSessionRepository.save(new WorkoutSession(
                 null,
                 userId,
@@ -102,8 +103,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         ));
 
         for (SessionExerciseTemplate templateExercise : templateContext.templateExercises()) {
-            // Even though the template already references an exercise, we validate visibility again
-            // so workout execution never creates records for exercises the user cannot access.
+            // 即使模板里已经引用了 Exercise，这里仍然再次校验可见性，
+            // 以确保训练执行层不会为当前用户不可访问的动作创建记录。
             requireVisibleExercise(userId, templateExercise.exerciseId());
 
             workoutExerciseRepository.save(new WorkoutExercise(
@@ -122,7 +123,9 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         return buildWorkoutDetailResponse(session);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 开始一次手动自由训练。
+     */
     @Override
     @Transactional
     public WorkoutDetailResponse createManualWorkout(Long userId, CreateManualWorkoutRequest request) {
@@ -144,7 +147,9 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         return buildWorkoutDetailResponse(session);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 查询完整训练详情。
+     */
     @Override
     @Transactional(readOnly = true)
     public WorkoutDetailResponse getWorkoutDetail(Long userId, Long workoutId) {
@@ -152,7 +157,9 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         return buildWorkoutDetailResponse(session);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 列出当前用户的训练历史。
+     */
     @Override
     @Transactional(readOnly = true)
     public List<WorkoutHistoryItemResponse> listWorkoutHistory(Long userId) {
@@ -161,7 +168,9 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
                 .toList();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 向进行中的训练中新增一个动作。
+     */
     @Override
     @Transactional
     public WorkoutExerciseResponse addWorkoutExercise(Long userId, Long workoutId, AddWorkoutExerciseRequest request) {
@@ -191,7 +200,9 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         return buildWorkoutExerciseResponse(workoutExercise);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 覆盖保存某个训练动作下的所有组。
+     */
     @Override
     @Transactional
     public List<WorkoutSetResponse> saveWorkoutSets(Long userId, Long workoutExerciseId, SaveWorkoutSetsRequest request) {
@@ -200,8 +211,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
 
         validateDistinctSetNo(request.sets());
 
-        // MVP uses full overwrite instead of incremental patching because it keeps persistence
-        // logic simple and deterministic while the workout editor behavior is still evolving.
+        // MVP 先采用整列表覆盖而不是增量 patch，
+        // 这样持久化逻辑更简单、结果也更确定，适合训练编辑器还在演进的阶段。
         workoutSetRepository.deleteByWorkoutExerciseId(workoutExerciseId);
 
         List<WorkoutSetResponse> responses = request.sets().stream()
@@ -209,12 +220,14 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
                 .map(WorkoutApplicationServiceImpl::toWorkoutSetResponse)
                 .toList();
 
-        // TODO: when the workout editor becomes more sophisticated, replace full overwrite
-        // with incremental insert/update/delete to preserve set-level history and ids.
+        // TODO: 当训练编辑器变得更复杂后，改成增量 insert/update/delete，
+        // 以保留组级别历史和稳定 id。
         return responses;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * 完成一次进行中的训练。
+     */
     @Override
     @Transactional
     public WorkoutDetailResponse finishWorkout(Long userId, Long workoutId) {
@@ -240,8 +253,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         ));
 
         if (completed.sourceType() == WorkoutSourceType.TEMPLATE) {
-            // Workout owns the act of completing one training session.
-            // Progression owns the separate concern of updating the recommendation cursor afterwards.
+            // workout 模块负责“完成训练”这件事本身。
+            // progression 模块负责“训练完成后如何推进推荐状态”这一独立关注点。
             progressionApplicationService.advanceProgramProgressAfterWorkoutCompletion(
                     userId,
                     completed.id(),
@@ -252,8 +265,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
         }
 
         if (completed.sourceType() == WorkoutSourceType.MANUAL) {
-            // MANUAL workouts are intentionally excluded from progression.
-            // They are free-form records and should not move the planned template sequence.
+            // MANUAL 训练故意不参与 progression。
+            // 它属于自由记录，不应该推动计划模板序列向前。
         }
 
         return buildWorkoutDetailResponse(completed);
@@ -267,8 +280,8 @@ public class WorkoutApplicationServiceImpl implements WorkoutApplicationService 
     private WorkoutSession requireModifiableWorkoutSession(Long userId, Long workoutId) {
         WorkoutSession session = requireOwnedWorkoutSession(userId, workoutId);
         if (session.status() == WorkoutStatus.COMPLETED) {
-            // Completed workouts become immutable so later progression/statistics modules can
-            // treat them as stable historical facts instead of mutable draft data.
+            // 已完成训练必须保持不可变，
+            // 这样后续 progression 和 stats 才能把它当成稳定历史事实，而不是可编辑草稿。
             throw new BusinessException("Completed workout cannot be modified");
         }
         return session;

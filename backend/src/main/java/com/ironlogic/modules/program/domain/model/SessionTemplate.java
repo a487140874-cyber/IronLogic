@@ -3,20 +3,20 @@ package com.ironlogic.modules.program.domain.model;
 import java.time.LocalDateTime;
 
 /**
- * Domain model for a SessionTemplate.
+ * SessionTemplate 的领域模型。
  *
- * <p>A SessionTemplate belongs to one ProgramBlock and defines a reusable training day
- * template, such as Push Day or Legs Day.
+ * <p>SessionTemplate 归属于某个 ProgramBlock，用于定义可复用的训练日模板，
+ * 例如 Push Day、Leg Day。
  *
- * @param id session template id
- * @param blockId parent block id
- * @param name template name
- * @param sequenceNo order within a block
- * @param triggerMode trigger mode string
- * @param notes optional notes
- * @param metadataJson extensible metadata json
- * @param createdAt creation time
- * @param updatedAt update time
+ * @param id SessionTemplate id
+ * @param blockId 所属 Block id
+ * @param name 模板名称
+ * @param sequenceNo 在 Block 内的顺序号
+ * @param triggerMode 触发模式
+ * @param notes 可选备注
+ * @param metadataJson 预留元数据 JSON
+ * @param createdAt 创建时间
+ * @param updatedAt 更新时间
  */
 public record SessionTemplate(
         Long id,

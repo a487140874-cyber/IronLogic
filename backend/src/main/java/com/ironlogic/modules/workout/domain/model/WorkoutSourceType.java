@@ -1,11 +1,10 @@
 package com.ironlogic.modules.workout.domain.model;
 
 /**
- * Source type of a WorkoutSession.
+ * WorkoutSession 的来源类型。
  *
- * <p>The type exists because template-based workouts and manual workouts have different source
- * semantics. Keeping the source explicit makes future progression integration easier without
- * mixing manual and template sessions heuristically.
+ * <p>模板训练和手动训练在业务语义上不同，因此必须显式记录来源，
+ * 避免后续 progression 混淆两种训练。
  */
 public enum WorkoutSourceType {
     TEMPLATE,

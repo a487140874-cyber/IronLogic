@@ -4,35 +4,35 @@ import com.ironlogic.modules.progression.domain.model.ProgramProgress;
 import java.util.Optional;
 
 /**
- * Repository boundary for ProgramProgress access.
+ * ProgramProgress 的仓储边界。
  *
- * <p>The progression module depends on this interface so its business logic stays decoupled
- * from MyBatis-Plus details and can be unit-tested with simple mocks.
+ * <p>progression 模块依赖这个接口，而不是直接依赖 MyBatis-Plus，
+ * 这样业务逻辑可以和基础设施细节解耦，也更方便单元测试。
  */
 public interface ProgramProgressRepository {
 
     /**
-     * Persists a new ProgramProgress row.
+     * 持久化一条新的 ProgramProgress。
      *
-     * @param programProgress progress state to persist
-     * @return persisted progress including generated id
+     * @param programProgress 待持久化的推进状态
+     * @return 持久化后的推进状态，包含生成 id
      */
     ProgramProgress save(ProgramProgress programProgress);
 
     /**
-     * Persists changes to an existing ProgramProgress row.
+     * 持久化一条已有 ProgramProgress 的更新。
      *
-     * @param programProgress updated progress state
-     * @return updated progress state
+     * @param programProgress 更新后的推进状态
+     * @return 更新后的推进状态
      */
     ProgramProgress update(ProgramProgress programProgress);
 
     /**
-     * Finds progression state by owner and program.
+     * 按用户和 Program 查询推进状态。
      *
-     * @param userId owner user id
-     * @param programId target program id
-     * @return optional progression state
+     * @param userId 所有者用户 id
+     * @param programId 目标 Program id
+     * @return 查询结果
      */
     Optional<ProgramProgress> findByUserIdAndProgramId(Long userId, Long programId);
 }

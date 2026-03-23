@@ -5,58 +5,58 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository boundary for ProgramBlock access.
+ * ProgramBlock 的仓储边界。
  */
 public interface ProgramBlockRepository {
 
     /**
-     * Persists a new block.
+     * 持久化一个新建的 ProgramBlock。
      *
-     * @param block block to persist
-     * @return persisted block
+     * @param block 待持久化的 Block
+     * @return 持久化后的 Block
      */
     ProgramBlock save(ProgramBlock block);
 
     /**
-     * Updates an existing block.
+     * 持久化一个已有 ProgramBlock 的更新。
      *
-     * @param block updated block
-     * @return updated block
+     * @param block 更新后的 Block
+     * @return 更新后的 Block
      */
     ProgramBlock update(ProgramBlock block);
 
     /**
-     * Finds a block by id.
+     * 按 id 查询 ProgramBlock。
      *
-     * @param id block id
-     * @return optional block
+     * @param id Block id
+     * @return 查询结果
      */
     Optional<ProgramBlock> findById(Long id);
 
     /**
-     * Lists blocks under one program.
+     * 列出某个 Program 下的 ProgramBlock。
      *
-     * @param programId parent program id
-     * @return ordered block list
+     * @param programId 所属 Program id
+     * @return 排序后的 Block 列表
      */
     List<ProgramBlock> findByProgramId(Long programId);
 
     /**
-     * Checks whether a sequence number already exists inside one program.
+     * 判断某个 Program 内是否已存在指定 sequenceNo。
      *
-     * @param programId parent program id
-     * @param sequenceNo sequence number
-     * @return true when duplicated
+     * @param programId 所属 Program id
+     * @param sequenceNo 顺序号
+     * @return 已存在时返回 true
      */
     boolean existsByProgramIdAndSequenceNo(Long programId, Integer sequenceNo);
 
     /**
-     * Checks whether a sequence number exists in the same program excluding one block.
+     * 判断同一个 Program 内是否存在指定 sequenceNo，但排除当前 Block 自身。
      *
-     * @param programId parent program id
-     * @param sequenceNo sequence number
-     * @param excludeId current block id to exclude during update
-     * @return true when duplicated
+     * @param programId 所属 Program id
+     * @param sequenceNo 顺序号
+     * @param excludeId 更新时需要排除的当前 Block id
+     * @return 已存在时返回 true
      */
     boolean existsByProgramIdAndSequenceNoAndIdNot(Long programId, Integer sequenceNo, Long excludeId);
 }

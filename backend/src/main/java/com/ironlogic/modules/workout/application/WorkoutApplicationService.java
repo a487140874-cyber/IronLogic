@@ -9,35 +9,35 @@ import com.ironlogic.modules.workout.dto.WorkoutHistoryItemResponse;
 import java.util.List;
 
 /**
- * Application service for Workout execution use cases.
+ * Workout 执行层的应用服务接口。
  *
- * <p>This service coordinates template reads from the program module, exercise visibility
- * checks from the exercise module, and write operations into the workout execution tables.
+ * <p>这一层负责串联 program 模块的模板读取、exercise 模块的可见性校验，以及
+ * workout 执行表的写入操作。
  */
 public interface WorkoutApplicationService {
 
-    /** Starts a workout by copying exercises from one visible SessionTemplate. */
+    /** 基于一个可见的 SessionTemplate 开始训练。 */
     WorkoutDetailResponse createWorkoutFromTemplate(Long userId, Long templateId);
 
-    /** Starts a manual free workout. */
+    /** 开始一次手动自由训练。 */
     WorkoutDetailResponse createManualWorkout(Long userId, CreateManualWorkoutRequest request);
 
-    /** Loads full workout detail including exercises and sets. */
+    /** 查询完整训练详情，包含动作与组。 */
     WorkoutDetailResponse getWorkoutDetail(Long userId, Long workoutId);
 
-    /** Lists workout history for the current user. */
+    /** 列出当前用户的训练历史。 */
     List<WorkoutHistoryItemResponse> listWorkoutHistory(Long userId);
 
-    /** Adds one exercise into an in-progress workout. */
+    /** 向进行中的训练中新增一个动作。 */
     WorkoutExerciseResponse addWorkoutExercise(Long userId, Long workoutId, AddWorkoutExerciseRequest request);
 
-    /** Overwrites all sets of one workout exercise. */
+    /** 覆盖保存某个训练动作下的所有组。 */
     List<com.ironlogic.modules.workout.dto.WorkoutSetResponse> saveWorkoutSets(
             Long userId,
             Long workoutExerciseId,
             SaveWorkoutSetsRequest request
     );
 
-    /** Completes one in-progress workout without triggering progression logic. */
+    /** 完成一次进行中的训练。 */
     WorkoutDetailResponse finishWorkout(Long userId, Long workoutId);
 }

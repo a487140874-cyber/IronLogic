@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for progression module APIs.
+ * progression 模块的 HTTP Controller。
  *
- * <p>This controller is intentionally thin. It only resolves the temporary current user id
- * and delegates sequence recommendation logic to the application service.
+ * <p>这一层故意保持轻量，只负责提供临时用户 id，并把序列推荐逻辑委托给 application service。
  */
 @RestController
 @RequestMapping("/api/progression/programs")
@@ -26,10 +25,10 @@ public class ProgressionController {
     }
 
     /**
-     * Returns the current sequence-based recommendation of one Program.
+     * 返回某个 Program 当前基于序列的推荐结果。
      *
-     * @param programId target program id
-     * @return current recommended template and its template exercise targets
+     * @param programId 目标 Program id
+     * @return 当前推荐模板及其模板动作目标值
      */
     @GetMapping("/{programId}/current-recommendation")
     public ApiResponse<CurrentRecommendationResponse> getCurrentRecommendation(@PathVariable Long programId) {
@@ -37,10 +36,10 @@ public class ProgressionController {
     }
 
     /**
-     * Returns persisted ProgramProgress when it already exists.
+     * 返回某个 Program 当前已持久化的 ProgramProgress。
      *
-     * @param programId target program id
-     * @return current ProgramProgress row, or {@code null} when progression has not been initialized yet
+     * @param programId 目标 Program id
+     * @return 当前 ProgramProgress；如果尚未初始化则返回 {@code null}
      */
     @GetMapping("/{programId}/progress")
     public ApiResponse<ProgramProgressResponse> getProgramProgress(@PathVariable Long programId) {
@@ -48,15 +47,14 @@ public class ProgressionController {
     }
 
     /**
-     * Provides the MVP current user id.
+     * 提供 MVP 阶段的当前用户 id。
      *
-     * <p>Authentication is intentionally postponed, so a fixed id is used to let progression
-     * logic close the loop end to end in this round.
+     * <p>认证模块暂未实现，因此这里先使用固定 id，让 progression 可以先完整闭环。
      *
-     * @return temporary current user id
+     * @return 临时当前用户 id
      */
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

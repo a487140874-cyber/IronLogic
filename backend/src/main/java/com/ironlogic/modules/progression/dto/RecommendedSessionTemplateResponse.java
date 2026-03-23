@@ -4,18 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * DTO for the currently recommended SessionTemplate.
+ * 当前推荐 SessionTemplate 的 DTO。
  *
- * @param id session template id
- * @param blockId parent block id
- * @param name template name
- * @param sequenceNo sequence number inside the block
- * @param triggerMode trigger mode configured on the template
- * @param notes optional template notes
- * @param metadataJson extensible template metadata json
- * @param createdAt creation time
- * @param updatedAt last update time
- * @param exercises ordered recommended exercise list under this template
+ * @param id SessionTemplate id
+ * @param blockId 所属 Block id
+ * @param name 模板名称
+ * @param sequenceNo 在 Block 内的顺序号
+ * @param triggerMode 模板配置的触发模式
+ * @param notes 可选模板备注
+ * @param metadataJson 预留模板元数据 JSON
+ * @param createdAt 创建时间
+ * @param updatedAt 更新时间
+ * @param exercises 该模板下排序后的推荐动作列表
  */
 public record RecommendedSessionTemplateResponse(
         Long id,

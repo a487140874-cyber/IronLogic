@@ -5,58 +5,58 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository boundary for SessionExerciseTemplate access.
+ * SessionExerciseTemplate 的仓储边界。
  */
 public interface SessionExerciseTemplateRepository {
 
     /**
-     * Persists a new template exercise.
+     * 持久化一个新建的 SessionExerciseTemplate。
      *
-     * @param templateExercise template exercise to persist
-     * @return persisted template exercise
+     * @param templateExercise 待持久化的模板动作
+     * @return 持久化后的模板动作
      */
     SessionExerciseTemplate save(SessionExerciseTemplate templateExercise);
 
     /**
-     * Updates an existing template exercise.
+     * 持久化一个已有 SessionExerciseTemplate 的更新。
      *
-     * @param templateExercise updated template exercise
-     * @return updated template exercise
+     * @param templateExercise 更新后的模板动作
+     * @return 更新后的模板动作
      */
     SessionExerciseTemplate update(SessionExerciseTemplate templateExercise);
 
     /**
-     * Finds a template exercise by id.
+     * 按 id 查询 SessionExerciseTemplate。
      *
-     * @param id template exercise id
-     * @return optional template exercise
+     * @param id 模板动作 id
+     * @return 查询结果
      */
     Optional<SessionExerciseTemplate> findById(Long id);
 
     /**
-     * Lists template exercises under one session template.
+     * 列出某个 SessionTemplate 下的 SessionExerciseTemplate。
      *
-     * @param sessionTemplateId parent session template id
-     * @return ordered template exercise list
+     * @param sessionTemplateId 所属 SessionTemplate id
+     * @return 排序后的模板动作列表
      */
     List<SessionExerciseTemplate> findBySessionTemplateId(Long sessionTemplateId);
 
     /**
-     * Checks whether order number already exists under one session template.
+     * 判断某个 SessionTemplate 下是否已存在指定 orderNo。
      *
-     * @param sessionTemplateId parent session template id
-     * @param orderNo order number
-     * @return true when duplicated
+     * @param sessionTemplateId 所属 SessionTemplate id
+     * @param orderNo 顺序号
+     * @return 已存在时返回 true
      */
     boolean existsBySessionTemplateIdAndOrderNo(Long sessionTemplateId, Integer orderNo);
 
     /**
-     * Checks whether order number already exists excluding current record.
+     * 判断某个 SessionTemplate 下是否已存在指定 orderNo，但排除当前记录自身。
      *
-     * @param sessionTemplateId parent session template id
-     * @param orderNo order number
-     * @param excludeId current template exercise id
-     * @return true when duplicated
+     * @param sessionTemplateId 所属 SessionTemplate id
+     * @param orderNo 顺序号
+     * @param excludeId 更新时需要排除的当前模板动作 id
+     * @return 已存在时返回 true
      */
     boolean existsBySessionTemplateIdAndOrderNoAndIdNot(Long sessionTemplateId, Integer orderNo, Long excludeId);
 }

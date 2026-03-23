@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for WorkoutSession-oriented APIs.
+ * WorkoutSession 维度的 HTTP Controller。
  *
- * <p>This controller keeps session-level endpoints together because they all operate on the
- * lifecycle of one workout session: creation, detail, history, and finishing.
+ * <p>这里集中处理一次训练生命周期相关的接口：开始、详情、历史、完成。
  */
 @RestController
 public class WorkoutController {
@@ -28,13 +27,13 @@ public class WorkoutController {
         this.workoutApplicationService = workoutApplicationService;
     }
 
-    /** Starts a workout from one accessible SessionTemplate. */
+    /** 基于可访问的 SessionTemplate 开始训练。 */
     @PostMapping("/api/workouts/from-template/{templateId}")
     public ApiResponse<WorkoutDetailResponse> createWorkoutFromTemplate(@PathVariable Long templateId) {
         return ApiResponse.success(workoutApplicationService.createWorkoutFromTemplate(currentUserId(), templateId));
     }
 
-    /** Starts a manual free workout. */
+    /** 开始一次手动自由训练。 */
     @PostMapping("/api/workouts/manual")
     public ApiResponse<WorkoutDetailResponse> createManualWorkout(
             @Valid @RequestBody(required = false) CreateManualWorkoutRequest request
@@ -43,26 +42,26 @@ public class WorkoutController {
         return ApiResponse.success(workoutApplicationService.createManualWorkout(currentUserId(), actualRequest));
     }
 
-    /** Loads full workout detail. */
+    /** 查询完整训练详情。 */
     @GetMapping("/api/workouts/{id}")
     public ApiResponse<WorkoutDetailResponse> getWorkoutDetail(@PathVariable Long id) {
         return ApiResponse.success(workoutApplicationService.getWorkoutDetail(currentUserId(), id));
     }
 
-    /** Lists workout history for the current user. */
+    /** 列出当前用户的训练历史。 */
     @GetMapping("/api/workouts/history")
     public ApiResponse<List<WorkoutHistoryItemResponse>> listWorkoutHistory() {
         return ApiResponse.success(workoutApplicationService.listWorkoutHistory(currentUserId()));
     }
 
-    /** Finishes one in-progress workout. */
+    /** 完成一次进行中的训练。 */
     @PostMapping("/api/workouts/{id}/finish")
     public ApiResponse<WorkoutDetailResponse> finishWorkout(@PathVariable Long id) {
         return ApiResponse.success(workoutApplicationService.finishWorkout(currentUserId(), id));
     }
 
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

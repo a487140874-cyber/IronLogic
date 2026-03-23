@@ -3,11 +3,10 @@ package com.ironlogic.modules.exercise.domain.policy;
 import com.ironlogic.modules.exercise.domain.model.Exercise;
 
 /**
- * Small domain policy for exercise ownership semantics.
+ * Exercise 归属语义的领域策略。
  *
- * <p>The policy is extracted to make the ownership rules explicit and reusable. The logic is
- * simple today, but this placement keeps it out of controller code and makes the rules easier
- * to test and reason about.
+ * <p>把这部分逻辑单独抽出来，是为了让归属权规则更显式、更可复用。虽然当前规则不复杂，
+ * 但放在这里可以避免 Controller 堆积判断，也更利于单测和后续演进。
  */
 public final class ExerciseOwnershipPolicy {
 
@@ -15,22 +14,22 @@ public final class ExerciseOwnershipPolicy {
     }
 
     /**
-     * Determines whether a user may modify an exercise.
+     * 判断当前用户是否可以修改某个 Exercise。
      *
-     * @param exercise target exercise
-     * @param userId current user id
-     * @return {@code true} only when the exercise is custom and owned by the same user
+     * @param exercise 目标 Exercise
+     * @param userId 当前用户 id
+     * @return 只有当 Exercise 是自定义且归当前用户所有时才返回 {@code true}
      */
     public static boolean canModify(Exercise exercise, Long userId) {
         return Boolean.TRUE.equals(exercise.isCustom()) && userId != null && userId.equals(exercise.ownerUserId());
     }
 
     /**
-     * Determines whether a user may view an exercise.
+     * 判断当前用户是否可以查看某个 Exercise。
      *
-     * @param exercise target exercise
-     * @param userId current user id
-     * @return {@code true} for system exercises and for exercises owned by the same user
+     * @param exercise 目标 Exercise
+     * @param userId 当前用户 id
+     * @return 系统 Exercise 或当前用户自己的 Exercise 都返回 {@code true}
      */
     public static boolean canView(Exercise exercise, Long userId) {
         return exercise.ownerUserId() == null || (userId != null && userId.equals(exercise.ownerUserId()));

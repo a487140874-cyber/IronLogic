@@ -4,39 +4,39 @@ import com.ironlogic.modules.progression.dto.CurrentRecommendationResponse;
 import com.ironlogic.modules.progression.dto.ProgramProgressResponse;
 
 /**
- * Application service for progression module use cases.
+ * progression 模块的应用服务接口。
  *
- * <p>This layer owns sequence-based recommendation state. Workout execution remains in the
- * workout module, and progression only reacts after a workout has already been completed.
+ * <p>这一层负责“基于序列的推荐状态”。训练执行仍属于 workout 模块，
+ * progression 只在训练已经完成之后响应并更新推进状态。
  */
 public interface ProgressionApplicationService {
 
     /**
-     * Returns the current recommended SessionTemplate for one Program.
+     * 返回某个 Program 当前推荐的 SessionTemplate。
      *
-     * @param userId current user id
-     * @param programId target program id
-     * @return current recommendation response
+     * @param userId 当前用户 id
+     * @param programId 目标 Program id
+     * @return 当前推荐结果
      */
     CurrentRecommendationResponse getCurrentRecommendation(Long userId, Long programId);
 
     /**
-     * Returns the persisted ProgramProgress row for one Program when it exists.
+     * 返回某个 Program 已持久化的 ProgramProgress。
      *
-     * @param userId current user id
-     * @param programId target program id
-     * @return persisted progression state, or {@code null} when progression has not been initialized yet
+     * @param userId 当前用户 id
+     * @param programId 目标 Program id
+     * @return 已持久化的推进状态；如果尚未初始化则返回 {@code null}
      */
     ProgramProgressResponse getProgramProgress(Long userId, Long programId);
 
     /**
-     * Advances ProgramProgress after one template workout has been completed.
+     * 在模板训练完成后推进 ProgramProgress。
      *
-     * @param userId current user id
-     * @param workoutId completed workout id
-     * @param programId source program id of the completed workout
-     * @param blockId source block id of the completed workout
-     * @param templateId source session template id of the completed workout
+     * @param userId 当前用户 id
+     * @param workoutId 已完成训练 id
+     * @param programId 已完成训练的来源 Program id
+     * @param blockId 已完成训练的来源 Block id
+     * @param templateId 已完成训练的来源 SessionTemplate id
      */
     void advanceProgramProgressAfterWorkoutCompletion(
             Long userId,

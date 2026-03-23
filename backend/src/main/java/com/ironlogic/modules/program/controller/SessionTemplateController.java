@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for SessionTemplate APIs.
+ * SessionTemplate 的 HTTP Controller。
  */
 @RestController
 public class SessionTemplateController {
@@ -26,13 +26,13 @@ public class SessionTemplateController {
         this.programApplicationService = programApplicationService;
     }
 
-    /** Lists session templates under one owned ProgramBlock. */
+    /** 列出指定 ProgramBlock 下的 SessionTemplate。 */
     @GetMapping("/api/blocks/{blockId}/session-templates")
     public ApiResponse<List<SessionTemplateResponse>> listSessionTemplates(@PathVariable Long blockId) {
         return ApiResponse.success(programApplicationService.listSessionTemplates(currentUserId(), blockId));
     }
 
-    /** Creates a session template under one owned ProgramBlock. */
+    /** 在指定 ProgramBlock 下创建 SessionTemplate。 */
     @PostMapping("/api/blocks/{blockId}/session-templates")
     public ApiResponse<SessionTemplateResponse> createSessionTemplate(
             @PathVariable Long blockId,
@@ -41,7 +41,7 @@ public class SessionTemplateController {
         return ApiResponse.success(programApplicationService.createSessionTemplate(currentUserId(), blockId, request));
     }
 
-    /** Updates one owned SessionTemplate. */
+    /** 更新一个属于当前用户 Program 层级的 SessionTemplate。 */
     @PutMapping("/api/session-templates/{id}")
     public ApiResponse<SessionTemplateResponse> updateSessionTemplate(
             @PathVariable Long id,
@@ -51,7 +51,7 @@ public class SessionTemplateController {
     }
 
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

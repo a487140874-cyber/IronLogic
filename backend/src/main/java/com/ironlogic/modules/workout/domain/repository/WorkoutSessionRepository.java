@@ -5,48 +5,48 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository boundary for WorkoutSession access.
+ * WorkoutSession 的仓储边界。
  */
 public interface WorkoutSessionRepository {
 
     /**
-     * Persists a new workout session.
+     * 持久化一个新建的 WorkoutSession。
      *
-     * @param workoutSession workout session to persist
-     * @return persisted workout session
+     * @param workoutSession 待持久化的 WorkoutSession
+     * @return 持久化后的 WorkoutSession
      */
     WorkoutSession save(WorkoutSession workoutSession);
 
     /**
-     * Updates an existing workout session.
+     * 持久化一个已有 WorkoutSession 的更新。
      *
-     * @param workoutSession updated workout session
-     * @return updated workout session
+     * @param workoutSession 更新后的 WorkoutSession
+     * @return 更新后的 WorkoutSession
      */
     WorkoutSession update(WorkoutSession workoutSession);
 
     /**
-     * Finds a workout session by id.
+     * 按 id 查询 WorkoutSession。
      *
-     * @param id session id
-     * @return optional session
+     * @param id WorkoutSession id
+     * @return 查询结果
      */
     Optional<WorkoutSession> findById(Long id);
 
     /**
-     * Finds an owned workout session by id.
+     * 按 id 和所有者查询 WorkoutSession。
      *
-     * @param id session id
-     * @param userId current user id
-     * @return optional owned session
+     * @param id WorkoutSession id
+     * @param userId 当前用户 id
+     * @return 查询结果
      */
     Optional<WorkoutSession> findByIdAndUserId(Long id, Long userId);
 
     /**
-     * Lists current user's workout history.
+     * 列出当前用户的训练历史。
      *
-     * @param userId current user id
-     * @return ordered workout sessions
+     * @param userId 当前用户 id
+     * @return 排序后的 WorkoutSession 列表
      */
     List<WorkoutSession> findByUserId(Long userId);
 }

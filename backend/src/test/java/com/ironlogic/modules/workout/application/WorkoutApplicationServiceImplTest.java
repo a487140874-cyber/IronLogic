@@ -1,10 +1,12 @@
 package com.ironlogic.modules.workout.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ironlogic.common.exception.BusinessException;
 import com.ironlogic.modules.exercise.domain.repository.ExerciseRepository;
 import com.ironlogic.modules.program.domain.repository.ProgramBlockRepository;
 import com.ironlogic.modules.program.domain.repository.ProgramRepository;
@@ -17,6 +19,7 @@ import com.ironlogic.modules.workout.domain.model.WorkoutStatus;
 import com.ironlogic.modules.workout.domain.repository.WorkoutExerciseRepository;
 import com.ironlogic.modules.workout.domain.repository.WorkoutSessionRepository;
 import com.ironlogic.modules.workout.domain.repository.WorkoutSetRepository;
+import com.ironlogic.modules.workout.dto.AddWorkoutExerciseRequest;
 import com.ironlogic.modules.workout.dto.CreateManualWorkoutRequest;
 import com.ironlogic.modules.workout.dto.WorkoutDetailResponse;
 import java.time.LocalDateTime;
@@ -29,10 +32,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Focused unit test for WorkoutApplicationServiceImpl.
+ * {@link WorkoutApplicationServiceImpl} 的聚焦单元测试。
  *
- * <p>This test covers the happy path of creating a manual workout without requiring a database
- * or web layer.
+ * <p>这些测试覆盖训练执行层中最关键的 MVP 行为，而不依赖数据库或 Web 层。
  */
 @ExtendWith(MockitoExtension.class)
 class WorkoutApplicationServiceImplTest {
@@ -67,7 +69,7 @@ class WorkoutApplicationServiceImplTest {
     @InjectMocks
     private WorkoutApplicationServiceImpl workoutApplicationService;
 
-    /** Verifies that a manual workout is created as MANUAL and IN_PROGRESS. */
+    /** 验证手动训练会以 MANUAL 和 IN_PROGRESS 状态创建。 */
     @Test
     void shouldCreateManualWorkout() {
         CreateManualWorkoutRequest request = new CreateManualWorkoutRequest("Evening session");
@@ -104,7 +106,7 @@ class WorkoutApplicationServiceImplTest {
         assertThat(captor.getValue().status()).isEqualTo(WorkoutStatus.IN_PROGRESS);
     }
 
-    /** Verifies that completing a template workout advances progression state. */
+    /** 验证模板训练完成后会推进 progression 状态。 */
     @Test
     void shouldAdvanceProgressionWhenTemplateWorkoutIsCompleted() {
         WorkoutSession existing = new WorkoutSession(
@@ -131,7 +133,7 @@ class WorkoutApplicationServiceImplTest {
         verify(progressionApplicationService).advanceProgramProgressAfterWorkoutCompletion(1L, 300L, 10L, 20L, 30L);
     }
 
-    /** Verifies that completing a manual workout does not move planned progression. */
+    /** 验证手动训练完成后不会推动计划序列。 */
     @Test
     void shouldNotAdvanceProgressionWhenManualWorkoutIsCompleted() {
         WorkoutSession existing = new WorkoutSession(
@@ -157,5 +159,33 @@ class WorkoutApplicationServiceImplTest {
 
         verify(progressionApplicationService, org.mockito.Mockito.never())
                 .advanceProgramProgressAfterWorkoutCompletion(any(), any(), any(), any(), any());
+    }
+
+    /** 验证已完成训练不能再继续修改。 */
+    @Test
+    void shouldRejectModificationForCompletedWorkout() {
+        WorkoutSession completed = new WorkoutSession(
+                302L,
+                1L,
+                WorkoutSourceType.TEMPLATE,
+                10L,
+                20L,
+                30L,
+                WorkoutStatus.COMPLETED,
+                LocalDateTime.now().minusHours(2),
+                LocalDateTime.now().minusHours(1),
+                null,
+                LocalDateTime.now().minusHours(2),
+                LocalDateTime.now().minusHours(1)
+        );
+
+        when(workoutSessionRepository.findByIdAndUserId(302L, 1L)).thenReturn(java.util.Optional.of(completed));
+
+        assertThatThrownBy(() -> workoutApplicationService.addWorkoutExercise(
+                1L,
+                302L,
+                new AddWorkoutExerciseRequest(99L, 1, null, null)
+        )).isInstanceOf(BusinessException.class)
+                .hasMessage("Completed workout cannot be modified");
     }
 }

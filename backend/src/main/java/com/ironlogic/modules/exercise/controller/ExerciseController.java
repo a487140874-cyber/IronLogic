@@ -19,12 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP entrypoint for Exercise module APIs.
+ * Exercise 模块的 HTTP 入口。
  *
- * <p>This controller intentionally stays thin. It only receives HTTP parameters, triggers
- * bean validation, supplies the temporary current user id, and delegates real use-case work
- * to {@link ExerciseApplicationService}. Keeping the controller small makes the business flow
- * easier to test in the application layer.
+ * <p>Controller 故意保持轻量，只负责接收 HTTP 参数、触发参数校验、提供临时用户 id，
+ * 再把真正的业务编排委托给 {@link ExerciseApplicationService}，从而让 application 层更易测试。
  */
 @Validated
 @RestController
@@ -38,10 +36,10 @@ public class ExerciseController {
     }
 
     /**
-     * Lists visible exercises for the current user.
+     * 列出当前用户可见的 Exercise。
      *
-     * @param request optional query filters such as exercise name
-     * @return system exercises plus the current user's custom exercises
+     * @param request 可选过滤条件，例如名称
+     * @return 系统 Exercise 与当前用户自定义 Exercise 列表
      */
     @GetMapping
     public ApiResponse<List<ExerciseResponse>> listExercises(@Valid @ModelAttribute ExerciseQueryRequest request) {
@@ -49,10 +47,10 @@ public class ExerciseController {
     }
 
     /**
-     * Loads exercise detail.
+     * 查询单个 Exercise 详情。
      *
-     * @param id exercise id
-     * @return the visible exercise detail
+     * @param id Exercise id
+     * @return 当前用户可见的 Exercise 详情
      */
     @GetMapping("/{id}")
     public ApiResponse<ExerciseResponse> getExercise(@PathVariable Long id) {
@@ -60,10 +58,10 @@ public class ExerciseController {
     }
 
     /**
-     * Creates a new custom exercise for the current user.
+     * 为当前用户创建一个自定义 Exercise。
      *
-     * @param request create payload
-     * @return created exercise
+     * @param request 创建请求
+     * @return 创建后的 Exercise
      */
     @PostMapping
     public ApiResponse<ExerciseResponse> createExercise(@Valid @RequestBody CreateExerciseRequest request) {
@@ -71,11 +69,11 @@ public class ExerciseController {
     }
 
     /**
-     * Updates an existing custom exercise.
+     * 更新一个已有的自定义 Exercise。
      *
-     * @param id exercise id
-     * @param request update payload
-     * @return updated exercise
+     * @param id Exercise id
+     * @param request 更新请求
+     * @return 更新后的 Exercise
      */
     @PutMapping("/{id}")
     public ApiResponse<ExerciseResponse> updateExercise(
@@ -86,15 +84,14 @@ public class ExerciseController {
     }
 
     /**
-     * Provides the MVP current user id.
+     * 提供 MVP 阶段的当前用户 id。
      *
-     * <p>Authentication is intentionally postponed in this round, so a fixed id is used to let
-     * the rest of the exercise module close the loop end to end.
+     * <p>认证模块暂未实现，因此这里先使用固定 id，让 Exercise 模块能够先完整闭环。
      *
-     * @return temporary current user id
+     * @return 临时当前用户 id
      */
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

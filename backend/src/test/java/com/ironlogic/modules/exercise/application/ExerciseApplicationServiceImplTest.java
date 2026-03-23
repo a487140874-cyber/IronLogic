@@ -18,11 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Focused unit test for {@link ExerciseApplicationServiceImpl}.
+ * {@link ExerciseApplicationServiceImpl} 的聚焦单元测试。
  *
- * <p>The goal of this test is to verify the main happy path without requiring a database:
- * when a user creates a custom exercise, the service should assign ownership and the custom
- * flag correctly before delegating persistence to the repository.
+ * <p>这个测试不依赖数据库，主要验证创建自定义 Exercise 的主流程：
+ * service 会在落库前正确补齐 owner 和 custom 标记。
  */
 @ExtendWith(MockitoExtension.class)
 class ExerciseApplicationServiceImplTest {
@@ -34,7 +33,7 @@ class ExerciseApplicationServiceImplTest {
     private ExerciseApplicationServiceImpl exerciseApplicationService;
 
     /**
-     * Verifies that creating a custom exercise produces the expected ownership and custom flags.
+     * 验证创建自定义 Exercise 时，会正确写入 owner 和 custom 标记。
      */
     @Test
     void shouldCreateCustomExercise() {

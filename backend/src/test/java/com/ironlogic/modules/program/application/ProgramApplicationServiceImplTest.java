@@ -23,10 +23,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Focused unit test for ProgramApplicationServiceImpl.
+ * {@link ProgramApplicationServiceImpl} 的聚焦单元测试。
  *
- * <p>This test verifies the MVP happy path for creating a Program without requiring database
- * or web context.
+ * <p>这个测试验证 MVP 阶段创建 Program 的主流程，不依赖数据库或 Web 上下文。
  */
 @ExtendWith(MockitoExtension.class)
 class ProgramApplicationServiceImplTest {
@@ -49,7 +48,7 @@ class ProgramApplicationServiceImplTest {
     @InjectMocks
     private ProgramApplicationServiceImpl programApplicationService;
 
-    /** Verifies that a created Program is assigned to the current user. */
+    /** 验证创建 Program 时会正确绑定到当前用户。 */
     @Test
     void shouldCreateProgramForCurrentUser() {
         CreateProgramRequest request = new CreateProgramRequest(

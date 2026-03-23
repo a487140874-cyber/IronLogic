@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * HTTP controller for ProgramBlock APIs.
+ * ProgramBlock 的 HTTP Controller。
  */
 @RestController
 public class ProgramBlockController {
@@ -27,13 +27,13 @@ public class ProgramBlockController {
         this.programApplicationService = programApplicationService;
     }
 
-    /** Lists blocks under one owned Program. */
+    /** 列出指定 Program 下的 ProgramBlock。 */
     @GetMapping("/api/programs/{programId}/blocks")
     public ApiResponse<List<ProgramBlockResponse>> listProgramBlocks(@PathVariable Long programId) {
         return ApiResponse.success(programApplicationService.listProgramBlocks(currentUserId(), programId));
     }
 
-    /** Creates a block under one owned Program. */
+    /** 在指定 Program 下创建 ProgramBlock。 */
     @PostMapping("/api/programs/{programId}/blocks")
     public ApiResponse<ProgramBlockResponse> createProgramBlock(
             @PathVariable Long programId,
@@ -42,7 +42,7 @@ public class ProgramBlockController {
         return ApiResponse.success(programApplicationService.createProgramBlock(currentUserId(), programId, request));
     }
 
-    /** Updates one owned ProgramBlock. */
+    /** 更新一个属于当前用户 Program 层级的 ProgramBlock。 */
     @PutMapping("/api/blocks/{id}")
     public ApiResponse<ProgramBlockResponse> updateProgramBlock(
             @PathVariable Long id,
@@ -52,7 +52,7 @@ public class ProgramBlockController {
     }
 
     private Long currentUserId() {
-        // TODO: replace fixed user id after auth module provides authenticated user context.
+        // TODO: 等 auth 模块提供真实登录上下文后，替换这里的固定用户 id。
         return 1L;
     }
 }

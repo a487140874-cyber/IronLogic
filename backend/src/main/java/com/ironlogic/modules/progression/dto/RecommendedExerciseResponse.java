@@ -3,22 +3,22 @@ package com.ironlogic.modules.progression.dto;
 import java.math.BigDecimal;
 
 /**
- * DTO for one recommended SessionExerciseTemplate item.
+ * 推荐模板中单个 SessionExerciseTemplate 的 DTO。
  *
- * <p>This response only exposes template target values. It does not calculate real training
- * load yet because progression v1 only solves sequence-based recommendation, not load advice.
+ * <p>这个响应只暴露模板目标值，不计算真实训练负荷，因为 progression v1 只解决序列推荐，
+ * 不解决重量、次数或 RPE 建议。
  *
- * @param id session exercise template id
- * @param exerciseId referenced exercise id
- * @param exerciseName display name of the referenced exercise
- * @param orderNo order inside the recommended session template
- * @param targetSets planned set count
- * @param targetReps planned rep target
- * @param targetWeight planned weight target from template
- * @param targetWeightUnit weight unit of the template target
- * @param restSeconds planned rest seconds
- * @param intensityMode template intensity mode
- * @param prescriptionJson extensible template prescription json
+ * @param id 模板动作 id
+ * @param exerciseId 引用的 Exercise id
+ * @param exerciseName 引用 Exercise 的展示名称
+ * @param orderNo 在推荐模板中的顺序
+ * @param targetSets 计划组数
+ * @param targetReps 模板目标次数
+ * @param targetWeight 模板目标重量
+ * @param targetWeightUnit 模板重量单位
+ * @param restSeconds 模板休息秒数
+ * @param intensityMode 模板强度模式
+ * @param prescriptionJson 预留处方 JSON
  */
 public record RecommendedExerciseResponse(
         Long id,
