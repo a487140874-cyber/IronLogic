@@ -12,6 +12,6 @@ abstract final class AppConstants {
   /// 如果在 Android 模拟器中运行，请通过 `--dart-define` 覆盖成 `http://10.0.2.2:8080`。
   static const String defaultApiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:8080',
+    defaultValue: 'http://localhost:8080',
   );
 }

@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ironlogic.common.persistence.typehandler.JsonbStringTypeHandler;
 import java.time.LocalDateTime;
 
 /**
  * Persistence entity mapped to the {@code program_blocks} table.
  */
-@TableName("program_blocks")
+@TableName(value = "program_blocks", autoResultMap = true)
 public class ProgramBlockEntity {
 
     @TableId(type = IdType.AUTO)
@@ -35,7 +36,7 @@ public class ProgramBlockEntity {
     @TableField("deload_enabled")
     private Boolean deloadEnabled;
 
-    @TableField("metadata_json")
+    @TableField(value = "metadata_json", typeHandler = JsonbStringTypeHandler.class)
     private String metadataJson;
 
     @TableField("created_at")

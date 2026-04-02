@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ironlogic.common.persistence.typehandler.JsonbStringTypeHandler;
 import java.time.LocalDateTime;
 
 /**
  * Persistence entity mapped to the {@code session_templates} table.
  */
-@TableName("session_templates")
+@TableName(value = "session_templates", autoResultMap = true)
 public class SessionTemplateEntity {
 
     @TableId(type = IdType.AUTO)
@@ -28,7 +29,7 @@ public class SessionTemplateEntity {
 
     private String notes;
 
-    @TableField("metadata_json")
+    @TableField(value = "metadata_json", typeHandler = JsonbStringTypeHandler.class)
     private String metadataJson;
 
     @TableField("created_at")

@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ironlogic.common.persistence.typehandler.JsonbStringTypeHandler;
 import java.time.LocalDateTime;
 
 /**
  * Persistence entity mapped to the {@code program_progress} table.
  */
-@TableName("program_progress")
+@TableName(value = "program_progress", autoResultMap = true)
 public class ProgramProgressEntity {
 
     @TableId(type = IdType.AUTO)
@@ -33,7 +34,7 @@ public class ProgramProgressEntity {
     @TableField("sequence_cursor")
     private Integer sequenceCursor;
 
-    @TableField("progress_snapshot_json")
+    @TableField(value = "progress_snapshot_json", typeHandler = JsonbStringTypeHandler.class)
     private String progressSnapshotJson;
 
     @TableField("updated_at")

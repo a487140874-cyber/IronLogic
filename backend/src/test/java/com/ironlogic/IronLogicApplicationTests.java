@@ -5,6 +5,7 @@ import com.ironlogic.modules.program.infrastructure.persistence.mapper.ProgramBl
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.ProgramMapper;
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.SessionExerciseTemplateMapper;
 import com.ironlogic.modules.program.infrastructure.persistence.mapper.SessionTemplateMapper;
+import com.ironlogic.modules.progression.infrastructure.persistence.mapper.ProgramProgressMapper;
 import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutExerciseMapper;
 import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutSessionMapper;
 import com.ironlogic.modules.workout.infrastructure.persistence.mapper.WorkoutSetMapper;
@@ -34,6 +35,9 @@ class IronLogicApplicationTests {
 
     @MockBean
     private SessionExerciseTemplateMapper sessionExerciseTemplateMapper;
+
+    @MockBean
+    private ProgramProgressMapper programProgressMapper;
 
     @MockBean
     private WorkoutSessionMapper workoutSessionMapper;

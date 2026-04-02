@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ironlogic.common.persistence.typehandler.JsonbStringTypeHandler;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * Persistence entity mapped to the {@code session_exercise_templates} table.
  */
-@TableName("session_exercise_templates")
+@TableName(value = "session_exercise_templates", autoResultMap = true)
 public class SessionExerciseTemplateEntity {
 
     @TableId(type = IdType.AUTO)
@@ -46,7 +47,7 @@ public class SessionExerciseTemplateEntity {
     @TableField("progression_rule_id")
     private Long progressionRuleId;
 
-    @TableField("prescription_json")
+    @TableField(value = "prescription_json", typeHandler = JsonbStringTypeHandler.class)
     private String prescriptionJson;
 
     @TableField("created_at")

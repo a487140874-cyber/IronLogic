@@ -1,5 +1,34 @@
-# curl "http://localhost:8080/api/exercises/1"
-GET http://localhost:8080/api/exercises/1
+# curl -X POST "http://localhost:8080/api/exercises"
+#  -H "Content-Type: application/json"
+#  -d '{
+#    "name": "Incline Dumbbell Press",
+#    "category": "strength",
+#    "primaryMuscle": "chest",
+#    "secondaryMusclesJson": "[\"shoulders\",\"triceps\"]",
+#    "equipmentType": "dumbbell",
+#    "movementPattern": "horizontal_push",
+#    "metadataJson": "{\"source\":\"user\"}"
+#  }'
+POST http://localhost:8080/api/exercises
+Content-Type: application/json
+
+{
+  "name": "Incline Dumbbell Press",
+  "category": "strength",
+  "primaryMuscle": "chest",
+  "secondaryMusclesJson": "["
+  shoulders
+  ","
+  triceps
+  "]",
+  "equipmentType": "dumbbell",
+  "movementPattern": "horizontal_push",
+  "metadataJson": "{"
+  source
+  ":"
+  user
+  "}"
+}
 
 ###
 

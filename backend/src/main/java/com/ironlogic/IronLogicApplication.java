@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan(basePackages = {
         "com.ironlogic.modules.exercise.infrastructure.persistence.mapper",
         "com.ironlogic.modules.program.infrastructure.persistence.mapper",
+        "com.ironlogic.modules.progression.infrastructure.persistence.mapper",
         "com.ironlogic.modules.workout.infrastructure.persistence.mapper"
 })
 public class IronLogicApplication {

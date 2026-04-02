@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ironlogic.common.persistence.typehandler.JsonbStringTypeHandler;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  * for expressing business intent. The application layer works with the domain model instead,
  * and repository code translates between the two forms.
  */
-@TableName("exercises")
+@TableName(value = "exercises", autoResultMap = true)
 public class ExerciseEntity {
 
     @TableId(type = IdType.AUTO)
@@ -29,7 +30,7 @@ public class ExerciseEntity {
     @TableField("primary_muscle")
     private String primaryMuscle;
 
-    @TableField("secondary_muscles_json")
+    @TableField(value = "secondary_muscles_json", typeHandler = JsonbStringTypeHandler.class)
     private String secondaryMusclesJson;
 
     @TableField("equipment_type")
@@ -41,7 +42,7 @@ public class ExerciseEntity {
     @TableField("is_custom")
     private Boolean isCustom;
 
-    @TableField("metadata_json")
+    @TableField(value = "metadata_json", typeHandler = JsonbStringTypeHandler.class)
     private String metadataJson;
 
     @TableField("created_at")
